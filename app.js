@@ -3,7 +3,9 @@ const button = document.getElementById('button');
 const select = document.getElementById('livello');
 
 button.addEventListener('click', function() {
-    
+
+    const num = [];
+
     let rows,columns,sizeCell;
 
     const typeSelect = select.value;
@@ -21,18 +23,40 @@ button.addEventListener('click', function() {
             break;
     
     }
+    
+    const totCell = rows * columns;
+    sizeCell = ` calc( 100% / ${columns} ) `;
 
-    function selected () {
+    function getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min) + min);
+    }
 
-        this.classList.add('selected');
+    for ( let j = 0; j < 16; j++ ) {
 
-        this.removeEventListener('click', selected);
+        const randomNum = getRandomInt(1, totCell);
+        if ( !num.includes(randomNum) ) {
+            num.push(randomNum);
+        }
 
     }
 
-    const totCell = rows * columns;
-    sizeCell = ` calc( 100% / ${columns} ) `;
-    
+    function selected () {
+
+        if( this !== num ) {
+            this.classList.add('selected');
+        } else {
+            this.classList.add('bomb');
+        }
+
+        this.removeEventListener('click', selected);
+
+        console.log(this)
+        console.log(num)
+
+    }
+
     gridWrapper.innerHTML = '';
     
     for ( let i = 0; i < totCell; i++ ) {
