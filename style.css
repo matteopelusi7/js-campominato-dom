@@ -33,6 +33,12 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+}
+
+.message {
+    position: absolute;
+    bottom: 50px;
 }
 
 .grid-container {

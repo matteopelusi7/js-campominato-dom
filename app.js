@@ -1,15 +1,59 @@
 const gridWrapper = document.querySelector('.grid-container');
 const button = document.getElementById('button');
 const select = document.getElementById('livello');
+const message = document.querySelector('.message');
+
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min);
+}
+
+function generateBombs(tot, min, max) {
+
+    const bomb = [];
+    
+    do {
+        
+        const randomNum = getRandomInt(min, max);
+
+        if( !bomb.includes(randomNum) ) {
+            bomb.push(randomNum);
+        }
+
+    } while (bomb.length < tot)
+    
+    return bomb;
+    
+}
+
+function isBomb ( num, bombs ) {
+    
+    if ( bombs.includes ( parseInt(num) ) ) {
+        return true;
+    } else {
+        return false;
+    }
+    
+}
+
+function gameOver (score) {
+
+    message.innerHTML = `Hai perso! Totalizzando ${score} punti. Gioca ancora...`;
+}
+
+function win (score) {
+
+    message.innerHTML = `Hai vinto! Totalizzando ${score} punti`;
+}
 
 button.addEventListener('click', function() {
 
-    const num = [];
-
-    let rows,columns,sizeCell;
+    let rows,columns,sizeCell,bombs;
+    let score = 0;
 
     const typeSelect = select.value;
-
+    
     switch (typeSelect) {
     
         case '0':
@@ -27,37 +71,36 @@ button.addEventListener('click', function() {
     const totCell = rows * columns;
     sizeCell = ` calc( 100% / ${columns} ) `;
 
-    function getRandomInt(min, max) {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min) + min);
-    }
-
-    for ( let j = 0; j < 16; j++ ) {
-
-        const randomNum = getRandomInt(1, totCell);
-        if ( !num.includes(randomNum) ) {
-            num.push(randomNum);
-        }
-
-    }
+    bombs = generateBombs(16, 1, totCell);
 
     function selected () {
 
-        if( this !== num ) {
-            this.classList.add('selected');
-        } else {
-            this.classList.add('bomb');
-        }
+        if( isBomb( this.innerHTML, bombs ) ) {
 
+            this.classList.add('bomb');
+
+            gameOver(score);
+            
+        } else {
+            
+            this.classList.add('selected');
+            
+            score++;
+            
+            if ( score == totCell - 16) {
+                
+                win(score);
+                
+            }
+            
+        }
+        
         this.removeEventListener('click', selected);
 
-        console.log(this)
-        console.log(num)
-
     }
-
+    
     gridWrapper.innerHTML = '';
+    message.innerHTML = '';
     
     for ( let i = 0; i < totCell; i++ ) {
         
@@ -65,11 +108,11 @@ button.addEventListener('click', function() {
         grid.classList.add('grid');
         grid.append(i + 1);
         grid.style.width = sizeCell;
-            
+        
         gridWrapper.appendChild(grid);
-
+        
         grid.addEventListener ('click', selected);
-            
+        
     }
-
+    
 })
